@@ -2,14 +2,26 @@
   "name": "bloc-flow",
   "displayName": "bloc_flow",
   "description": "bloc flow",
-  "version": "0.0.1",
+  "version": "0.0.2",
+  "publisher": "HoDoan",
   "engines": {
     "vscode": "^1.76.0"
   },
+  "bugs": {
+    "url": "https://github.com/DoanpPhiHo/vs_bloc_extension/issues",
+    "email": "hodoan.it.dev@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DoanpPhiHo/vs_bloc_extension"
+  },
+  "homepage": "https://github.com/DoanpPhiHo/vs_bloc_extension",
   "categories": [
-    "Other"
+    "Snippets",
+    "Programming Languages"
   ],
   "activationEvents": [],
+  "icon": "assets/logo.png",
   "main": "./out/extension.js",
   "contributes": {
     "configuration": [
