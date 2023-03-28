@@ -107,6 +107,7 @@
     "@types/mkdirp": "^2.0.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
+    "@types/node-fetch": "^2.6.2",
     "@types/vscode": "^1.76.0",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
@@ -119,6 +120,7 @@
   "dependencies": {
     "change-case": "^4.1.2",
     "lodash": "^4.17.21",
-    "mkdirp": "^2.1.6"
+    "mkdirp": "^2.1.6",
+    "node-fetch": "^2.6.9"
   }
 }
