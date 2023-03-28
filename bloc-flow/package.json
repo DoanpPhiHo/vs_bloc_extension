@@ -50,6 +50,11 @@
         {
           "id": "bloc-flow",
           "name": "Dependencies"
+        },
+        {
+          "type": "webview",
+          "id": "bloc-flow.colorsView",
+          "name": "Calico Colors"
         }
       ]
     },
@@ -57,6 +62,17 @@
       {
         "command": "bloc-flow.new_page",
         "title": "New Page"
+      },
+      {
+        "command": "bloc-flow.addColor",
+        "category": "Calico Colors",
+        "title": "Add Color"
+      },
+      {
+        "command": "bloc-flow.clearColors",
+        "category": "Calico Colors",
+        "title": "Clear Colors",
+        "icon": "$(clear-all)"
       }
     ],
     "menus": {
@@ -65,6 +81,13 @@
           "command": "bloc-flow.new_page",
           "group": "blocFlow@1",
           "when": "explorerResourceIsFolder"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "bloc-flow.clearColors",
+          "group": "navigation",
+          "when": "view == bloc-flow.colorsView"
         }
       ]
     }

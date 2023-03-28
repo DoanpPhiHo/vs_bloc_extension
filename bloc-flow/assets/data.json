@@ -1,0 +1,9 @@
+{
+    "code":[
+        {
+            "name":"navigation",
+            "icon":"https://cdn-icons-png.flaticon.com/512/4436/4436481.png",
+            "content":"{\"type\": \"webview\",\"id\": \"bloc-flow.colorsView\",\"name\": \"Calico Colors\"}"
+        }
+    ]
+}
