@@ -36,6 +36,23 @@
         }
       }
     ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "bloc-flow",
+          "title": "Bloc Flow",
+          "icon": "assets/edit.svg"
+        }
+      ]
+    },
+    "views": {
+      "bloc-flow": [
+        {
+          "id": "bloc-flow",
+          "name": "Dependencies"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "bloc-flow.new_page",
