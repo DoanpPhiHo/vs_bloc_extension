@@ -48,13 +48,9 @@
     "views": {
       "bloc-flow": [
         {
-          "id": "bloc-flow",
-          "name": "Dependencies"
-        },
-        {
           "type": "webview",
           "id": "bloc-flow.colorsView",
-          "name": "Calico Colors"
+          "name": "Github Widget"
         }
       ]
     },
