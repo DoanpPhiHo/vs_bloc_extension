@@ -24,6 +24,12 @@
   "icon": "assets/logo.png",
   "main": "./out/extension.js",
   "contributes": {
+    "snippets": [
+      {
+        "language": "dart",
+        "path": "./snippets.json"
+      }
+    ],
     "configuration": [
       {
         "title": "Page",
@@ -56,8 +62,16 @@
     },
     "commands": [
       {
-        "command": "bloc-flow.new_page",
-        "title": "New Page"
+        "command": "bloc-flow.new_feature",
+        "title": "New Feature"
+      },
+      {
+        "command": "bloc-flow.new_presentation",
+        "title": "New Presentation"
+      },
+      {
+        "command": "bloc-flow.new_bloc",
+        "title": "New Bloc CL"
       },
       {
         "command": "bloc-flow.addColor",
@@ -74,7 +88,17 @@
     "menus": {
       "explorer/context": [
         {
-          "command": "bloc-flow.new_page",
+          "command": "bloc-flow.new_feature",
+          "group": "blocFlow@1",
+          "when": "explorerResourceIsFolder"
+        },
+        {
+          "command": "bloc-flow.new_presentation",
+          "group": "blocFlow@1",
+          "when": "explorerResourceIsFolder"
+        },
+        {
+          "command": "bloc-flow.new_bloc",
           "group": "blocFlow@1",
           "when": "explorerResourceIsFolder"
         }
