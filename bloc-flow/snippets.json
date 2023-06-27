@@ -1,0 +1,8 @@
+{
+    "Bloc": {
+        "prefix": "ss",
+        "body": [
+            "S.of(context)!."
+        ]
+    }
+}
