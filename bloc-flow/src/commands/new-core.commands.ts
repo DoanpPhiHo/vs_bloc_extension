@@ -1095,6 +1095,7 @@ async function generateCore(targetDirectory: string) {
       `${blocDirectoryPath}/utils`,
       `import 'package:flutter/material.dart';
     import 'package:dio/dio.dart';
+    export 'package:flutter_gen/gen_l10n/s.dart';
 
     class SizeUntil {
       SizeUntil._();

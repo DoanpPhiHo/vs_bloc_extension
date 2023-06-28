@@ -79,7 +79,7 @@ async function generateFeature(featureName: string, targetDirectory: string) {
     createFile(
       `${fileName}_local_data_source.dart`,
       `${blocDirectoryPath}/data/local_data_sources`,
-      `import 'package:dartz/dartz.dart';
+      `import '../../../../core/local_database/local_database.dart';
   import '../models/models.dart';
   
   class ${className}LocalDataSource extends BaseLocalDatabase<${className}Model>
@@ -160,7 +160,7 @@ class ${className}RemoteDataSource {
     final ${className}LocalDataSource _localDataSource;
     // ignore: unused_field
     final ${className}RemoteDataSource _remoteDataSource;
-  
+    @override
     Future<Either<String, ${className}Model>>
         get(String id) async {
       try {
