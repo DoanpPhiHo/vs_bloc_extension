@@ -293,7 +293,7 @@ async function generateCore(targetDirectory: string) {
       }) = _ApiClient;
         
       //TODO: hard
-      @GET('/hihi')
+      @GET('/signIn')
       Future<void> signIn();
     }
       `
@@ -795,6 +795,117 @@ async function generateCore(targetDirectory: string) {
         return null;
       }
       }`
+    ),
+    //#endregion
+
+    //#region readme, l10n, build
+    createFile(
+      `README.md`,
+      blocDirectoryPath,
+      `TODO: remove
+      WidgetsFlutterBinding.ensureInitialized();
+      runZonedGuarded(() async {
+        await initApp();
+        configureDependencies(
+          dio: ApiUtil.initApiService(apiEndpoint: dotenv.env['API_ENDPOINT']),
+        );
+        await LocalDatabase.init();
+        runApp(const App());
+      }, (error, stackTrace) async {
+        await CrashlyticsApp.logError(
+          'Error when init App : $error',
+          stackTrace: stackTrace,
+          fatal: true,
+        );
+      });
+
+      Future<void> initApp() async {
+        await dotenv.load();
+        final firebaseApp = await Firebase.initializeApp(
+          name: DefaultFirebaseOptions.name,
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+        Routes.configureRoutes();
+      
+        firebaseApp.setAutomaticDataCollectionEnabled(true);
+        EasyLoading.instance
+          ..displayDuration = const Duration(milliseconds: 2000)
+          ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+          ..loadingStyle = EasyLoadingStyle.light
+          ..indicatorSize = 45.0
+          ..radius = 10.0
+          ..userInteractions = true
+          ..dismissOnTap = false;
+        try {
+          await SharedPreferencesHelper.instance.init();
+          await RemoteConfigApp.init();
+          await AnalyticsApp.init(firebaseApp: firebaseApp);
+          await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+        } catch (e) {
+          log(e.toString())
+        }
+      }
+      `
+    ),
+    createFile(
+      `l10n.yaml`,
+      blocDirectoryPath,
+      `TODO: more source app
+arb-dir: lib/core/language
+template-arb-file: app_vi.arb
+output-localization-file: s.dart
+output-class: S
+output-dir: lib/core/language/l10n
+      `
+    ),
+    createFile(
+      `build.yaml`,
+      blocDirectoryPath,
+      `targets:
+      $default:
+        builders:
+          injectable_generator:injectable_builder:
+            options:
+              auto_register: true
+              # auto registers any class with a name matches the given pattern
+              class_name_pattern: "Service$|Repository$|UseCase$|RemoteDataSource$|LocalDataSource$|ApiUtil$|Bloc$|LocalDatabase$|Online$"
+              # auto registers any class inside a file with a
+              # name matches the given pattern
+      `
+    ),
+    createFile(
+      `.env`,
+      blocDirectoryPath,
+      `API_ENDPOINT = http://20.205.148.103/`
+    ),
+    createFile(
+      `runner.sh`,
+      blocDirectoryPath,
+      `flutter gen-l10n
+flutter pub run build_runner build --delete-conflicting-outputs`
+    ),
+    createFile(
+      `install_init.sh`,
+      blocDirectoryPath,
+      `# flutter_gen:
+#   output: lib/core/generator
+#   line_length: 80
+#   integrations:
+#     flutter_svg: true
+# flutter:
+#   generate: true
+#   uses-material-design: true
+#   assets:
+#     - assets/icon/
+
+#     - .env
+flutter pub add build_runner --dev
+flutter pub add injectable_generator --dev
+flutter pub add json_serializable --dev
+flutter pub add copy_with_extension_gen --dev
+flutter pub add flutter_gen_runner --dev
+flutter pub add retrofit_generator --dev
+      `
     ),
     //#endregion
   ]);
