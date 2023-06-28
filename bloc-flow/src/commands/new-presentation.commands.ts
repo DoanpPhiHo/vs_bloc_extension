@@ -67,7 +67,7 @@ Handler ${handleName}Handler = Handler(
     handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
   return BlocProvider(
     create: (context) => ${className}Bloc(
-      getIt<${className}Case>(),
+      getIt<${className}UseCase>(),
     )..add(${className}InitEvent()),
     child: const ${className}Page(),
   );

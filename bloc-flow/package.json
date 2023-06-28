@@ -70,6 +70,10 @@
         "title": "New Presentation"
       },
       {
+        "command": "bloc-flow.new_core",
+        "title": "New Core"
+      },
+      {
         "command": "bloc-flow.new_bloc",
         "title": "New Bloc CL"
       },
@@ -98,6 +102,11 @@
         },
         {
           "command": "bloc-flow.new_presentation",
+          "group": "blocFlow@1",
+          "when": "explorerResourceIsFolder"
+        },
+        {
+          "command": "bloc-flow.new_core",
           "group": "blocFlow@1",
           "when": "explorerResourceIsFolder"
         },

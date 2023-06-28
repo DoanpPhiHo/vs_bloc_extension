@@ -71,7 +71,7 @@ export const blocStr = (name: string) => {
         //   );
           emit(${className}Success());
         } catch (e) {
-          emit(ProfileFailure(e.toString()));
+          emit(${className}Failure(e.toString()));
         }
       });
     }

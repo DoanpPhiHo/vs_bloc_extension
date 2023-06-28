@@ -62,6 +62,7 @@ async function generateFeature(featureName: string, targetDirectory: string) {
 
   let className = changeCase.pascalCase(featureName);
   let fileName = changeCase.snakeCase(featureName);
+  let param = changeCase.camelCase(featureName);
 
   await Promise.all([
     createFile(
@@ -87,7 +88,7 @@ async function generateFeature(featureName: string, targetDirectory: string) {
   
     Future<dynamic> get(String id) async {
       // if (instance == null) throw Exception('db null');
-      // return instance!.profileModels.filter().idEqualTo(id).findFirst();
+      // return instance!.${param}Models.filter().idEqualTo(id).findFirst();
       return null;
     }
   }
@@ -154,7 +155,9 @@ class ${className}RemoteDataSource {
       this._localDataSource,
     );
   
+    // ignore: unused_field
     final ${className}LocalDataSource _localDataSource;
+    // ignore: unused_field
     final ${className}RemoteDataSource _remoteDataSource;
   
     Future<Either<String, ${className}Model>>
