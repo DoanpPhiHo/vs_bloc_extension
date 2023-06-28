@@ -4,5 +4,169 @@
         "body": [
             "S.of(context)!."
         ]
+    },
+    "Future code US": {
+        "prefix": [
+            "ffu"
+        ],
+        "body": [
+            "Future<Either<ErrorState, ${1:model}>> ${2:name}() async {",
+            "  final response = await _repository.${2:name}();",
+            "  return response.fold(",
+            "    (l) => Left(l),",
+            "    (r) => r,",
+            "  );",
+            "}"
+        ],
+        "description": "a future template use case"
+    },
+    "Future code Repo": {
+        "prefix": [
+            "ffr"
+        ],
+        "body": [
+            "Future<Either<ErrorState, ${1:model}>> ${2:name}();"
+        ],
+        "description": "a future template repo"
+    },
+    "Future code Repo Imlp local": {
+        "prefix": [
+            "ffril"
+        ],
+        "body": [
+            "final result = await _localDataSource.${1:function}();",
+            "if (result == null) throw Exception('${2:error}');",
+            "",
+            "return Right(result);"
+        ],
+        "description": "a future template repo imlp local"
+    },
+    "Future code Repo Imlp remote": {
+        "prefix": [
+            "ffrim"
+        ],
+        "body": [
+            "final response = await _remoteDataSource.${1:function}();",
+            "return response.fold(",
+            "  (l) => Left(l),",
+            "  (r) => Right(r),",
+            ");"
+        ],
+        "description": "a future template repo imlp remote"
+    },
+    "Future code isar LDS": {
+        "prefix": [
+            "ffilds"
+        ],
+        "body": [
+            "if (instance == null) throw Exception('isar null');",
+            "return instance!.${1:model}.where().${2:action}();"
+        ],
+        "description": "a future template local data source"
+    },
+    "Future code RDS": {
+        "prefix": [
+            "ffirds"
+        ],
+        "body": [
+            "try {",
+            "  final data = await _apiClient.${1:action}();",
+            "  if (result.response.statusCode == 200) {",
+            "    return Right(result.data);",
+            "  }",
+            "  throw Exception(",
+            "    '${result.response.statusCode}:${result.response.statusMessage}');",
+            "} on Exception catch (e, s) {",
+            "  await CrashlyticsApp.logError(",
+            "      'Fail to call API ${1:action} : $e',",
+            "      stackTrace: s);",
+            "  return Left(",
+            "      ErrorState(error: e.decodeErrorResponse(), stackTrace: s));",
+            "}"
+        ],
+        "description": "a future template remote data source"
+    },
+    "Future code api": {
+        "prefix": [
+            "ffa"
+        ],
+        "body": [
+            "Future<${2:type}> ${1:name}(",
+            "  ${3:param}",
+            ");"
+        ],
+        "description": "a future template local data source"
+    },
+    "GET Retrofit": {
+        "prefix": [
+            "get"
+        ],
+        "body": [
+            "@GET('/${1:name}')"
+        ],
+        "description": "a get template retrofit"
+    },
+    "POST Retrofit": {
+        "prefix": [
+            "post"
+        ],
+        "body": [
+            "@POST('/${1:name}')"
+        ],
+        "description": "a post template retrofit"
+    },
+    "PATCH Retrofit": {
+        "prefix": [
+            "patch"
+        ],
+        "body": [
+            "@PATCH('/${1:name}')"
+        ],
+        "description": "a patch template retrofit"
+    },
+    "PUT Retrofit": {
+        "prefix": [
+            "put"
+        ],
+        "body": [
+            "@PUT('/${1:name}')"
+        ],
+        "description": "a put template retrofit"
+    },
+    "delete Retrofit": {
+        "prefix": [
+            "delete"
+        ],
+        "body": [
+            "@DELETE('/${1:name}')"
+        ],
+        "description": "a delete template retrofit"
+    },
+    "path Retrofit": {
+        "prefix": [
+            "path"
+        ],
+        "body": [
+            "@Path('${1:name}') String ${1:name})"
+        ],
+        "description": "a path template retrofit"
+    },
+    "body Retrofit": {
+        "prefix": [
+            "body"
+        ],
+        "body": [
+            "@Body() Map<String, dynamic> body"
+        ],
+        "description": "a body template retrofit"
+    },
+    "query Retrofit": {
+        "prefix": [
+            "query"
+        ],
+        "body": [
+            "@Query('${1:name}') int ${1:name}"
+        ],
+        "description": "a query template retrofit"
     }
 }

@@ -2,7 +2,7 @@
   "name": "bloc-flow",
   "displayName": "bloc_flow",
   "description": "bloc flow",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "HoDoan",
   "engines": {
     "vscode": "^1.76.0"
@@ -74,6 +74,10 @@
         "title": "New Bloc CL"
       },
       {
+        "command": "bloc-flow.new_model",
+        "title": "New Model"
+      },
+      {
         "command": "bloc-flow.addColor",
         "category": "Calico Colors",
         "title": "Add Color"
@@ -99,6 +103,11 @@
         },
         {
           "command": "bloc-flow.new_bloc",
+          "group": "blocFlow@1",
+          "when": "explorerResourceIsFolder"
+        },
+        {
+          "command": "bloc-flow.new_model",
           "group": "blocFlow@1",
           "when": "explorerResourceIsFolder"
         }
