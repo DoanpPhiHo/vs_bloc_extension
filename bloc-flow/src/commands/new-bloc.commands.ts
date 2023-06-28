@@ -46,6 +46,7 @@ export const blocStr = (name: string) => {
   return `import 'package:copy_with_extension/copy_with_extension.dart';
   import 'package:flutter_bloc/flutter_bloc.dart';
   import 'package:meta/meta.dart';
+  import '../../../domain/use_case/${fileName}_use_case.dart';
   
   part '${fileName}_event.dart';
   part '${fileName}_state.dart';
@@ -76,6 +77,7 @@ export const blocStr = (name: string) => {
       });
     }
   
+    // ignore: unused_field
     final ${className}UseCase _useCase;
   }`;
 };
@@ -131,7 +133,10 @@ export const stateStr = (name: string) => {
   
   @CopyWith()
   class ${className}Success extends ${className}State {
-    ${className}Success();
+    ${className}Success({
+      this.counter = 0,
+    });
+    final int counter;
   }
   `;
 };

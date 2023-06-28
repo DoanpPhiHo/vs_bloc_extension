@@ -4,6 +4,7 @@ import { newPresentation } from "./commands/new-presentation.commands";
 import { newBloc } from "./commands/new-bloc.commands";
 import { newModel } from "./commands/new-model.commands";
 import { newCore } from "./commands/new-core.commands";
+import { newColor } from "./commands/new-color.commands";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "bloc-flow" is now active!');
@@ -17,6 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("bloc-flow.new_bloc", newBloc),
     vscode.commands.registerCommand("bloc-flow.new_model", newModel),
     vscode.commands.registerCommand("bloc-flow.new_core", newCore),
+    vscode.commands.registerCommand("bloc-flow.new_color", newColor),
   );
 }
 

@@ -85,11 +85,12 @@ async function generateFeature(featureName: string, targetDirectory: string) {
   class ${className}LocalDataSource extends BaseLocalDatabase<${className}Model>
   with LocalDatabase {
     ${className}LocalDataSource();
-  
-    Future<dynamic> get(String id) async {
+    
+    @override
+    Future<${className}Model> get(String id) async {
       // if (instance == null) throw Exception('db null');
       // return instance!.${param}Models.filter().idEqualTo(id).findFirst();
-      return null;
+      return ${className}Model();
     }
   }
   `

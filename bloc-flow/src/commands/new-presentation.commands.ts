@@ -50,9 +50,17 @@ export const presentationStr = (
   let templateStr = changeCase.dotCase(fullPath);
 
   return `import 'package:fluro/fluro.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'bloc/${fileName}_bloc.dart';
+  import 'package:flutter/material.dart';
+  import 'package:flutter_bloc/flutter_bloc.dart';
+  
+  import '../../../../core/common/widgets/dialog/loading.dart';
+  import '../../../../core/common/widgets/toast/toast.dart';
+  import '../../../../core/generator/colors.gen.dart';
+  import '../../../../core/services/di/service_locator.dart';
+  import '../../../../core/utils/extensions.dart';
+  import '../../../../core/utils/styles.dart';
+  import '../../domain/use_case/${fileName}_use_case.dart';
+  import 'bloc/${fileName}_bloc.dart';
 
 //TODO: router
 // setRouter(
@@ -122,7 +130,7 @@ class _${className}PageState extends State<${className}Page> {
               return Center(
                 child: Text(
                   state.error,
-                  style: AppTextStyle.normalStyle.cp(color: AppColors.red),
+                  style: AppTextStyle.normal.cp(color: AppColors.red),
                 ),
               );
             case ${className}Success():
@@ -141,7 +149,7 @@ class _${className}PageState extends State<${className}Page> {
                       centerTitle: true,
                       title: Text(
                         '${className}'.hardcode,
-                        style: AppTextStyle.normalStyle.cp(
+                        style: AppTextStyle.normal.cp(
                           height: 0,
                           fontSize: 16.sf,
                           fontWeight: FontWeight.w600,
@@ -160,8 +168,8 @@ class _${className}PageState extends State<${className}Page> {
                         children: [
                             Text(
                                 '${templateStr}'.hardcode,
-                                style: AppTextStyle.normalStyle.cp(
-                                    color: AppColors.complementary500,
+                                style: AppTextStyle.normal.cp(
+                                    color: AppColors.primary300,
                                     fontWeight: FontWeight.w700,
                                     fontSize: 14.sf,
                                 ),
