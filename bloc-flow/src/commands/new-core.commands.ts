@@ -71,6 +71,347 @@ async function generateCore(targetDirectory: string) {
   //TODO: miss firebase, notification
 
   await Promise.all([
+    //#region common
+    createFile(
+      `loading.dart`,
+      `${blocDirectoryPath}/common/widgets/dialog`,
+      `import 'dart:math';
+
+      import 'package:flutter/material.dart';
+      
+      import '../../../../app.dart';
+      import '../../../generator/colors.gen.dart';
+
+      class LoadingDialog {
+        LoadingDialog._();
+        static LoadingDialog instance = LoadingDialog._();
+        OverlayEntry? _overlay;
+      
+        void show() {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            if (_overlay == null) {
+              _overlay = OverlayEntry(
+                builder: (context) => ColoredBox(
+                  color: Colors.black.withOpacity(.3),
+                  child: const Center(
+                    child: LoadingAnimated(),
+                  ),
+                ),
+              );
+              Overlay.of(navigatorKey.currentState!.context).insert(_overlay!);
+            }
+          });
+        }
+      
+        void hide() {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            _overlay?.remove();
+            _overlay = null;
+          });
+        }
+      }
+      
+      class GradientCircularProgressIndicator extends StatelessWidget {
+        const GradientCircularProgressIndicator({
+          super.key,
+          required this.radius,
+          required this.gradientColorsStart,
+          required this.gradientColorsEnd,
+          this.strokeWidth = 10.0,
+          this.endPoint,
+        });
+        final double radius;
+        final Color gradientColorsStart;
+        final Color gradientColorsEnd;
+        final double strokeWidth;
+        final double? endPoint;
+      
+        @override
+        Widget build(BuildContext context) {
+          return CustomPaint(
+            size: Size.fromRadius(radius),
+            painter: GradientCircularProgressPainter(
+              gradientColors: [
+                gradientColorsEnd,
+                gradientColorsStart,
+              ],
+              strokeWidth: strokeWidth,
+              endPoint: endPoint,
+            ),
+          );
+        }
+      }
+      
+      class LoadingAnimated extends StatefulWidget {
+        const LoadingAnimated({
+          super.key,
+          this.strokeWidth,
+          this.radius,
+          this.begin,
+          this.end,
+          this.gradientColorsStart,
+          this.gradientColorsEnd,
+          this.endPoint,
+          this.size,
+        });
+        final Size? size;
+        final double? strokeWidth;
+        final double? radius;
+        final double? begin;
+        final double? end;
+        final Color? gradientColorsStart;
+        final Color? gradientColorsEnd;
+        final double? endPoint;
+      
+        @override
+        State<LoadingAnimated> createState() => _LoadingAnimatedState();
+      }
+      
+      class _LoadingAnimatedState extends State<LoadingAnimated>
+          with SingleTickerProviderStateMixin {
+        late AnimationController _controller;
+      
+        @override
+        void initState() {
+          _controller = AnimationController(
+            duration: const Duration(seconds: 2),
+            vsync: this,
+          )..repeat();
+          super.initState();
+        }
+      
+        @override
+        void dispose() {
+          _controller.dispose();
+          super.dispose();
+        }
+      
+        @override
+        Widget build(BuildContext context) {
+          return RotationTransition(
+            turns: Tween(
+              begin: widget.begin ?? 0.0,
+              end: widget.end ?? 1.0,
+            ).animate(_controller),
+            child: SizedBox(
+              width: widget.size?.width,
+              height: widget.size?.height,
+              child: GradientCircularProgressIndicator(
+                radius: widget.radius ?? 20,
+                strokeWidth: widget.strokeWidth ?? 5,
+                gradientColorsEnd:
+                    widget.gradientColorsEnd ?? AppColors.primary300.withOpacity(0),
+                gradientColorsStart:
+                    widget.gradientColorsStart ?? AppColors.primary300,
+                endPoint: widget.endPoint,
+              ),
+            ),
+          );
+        }
+      }
+      
+      class GradientCircularProgressPainter extends CustomPainter {
+        GradientCircularProgressPainter({
+          required this.gradientColors,
+          required this.strokeWidth,
+          this.endPoint,
+        });
+        final List<Color> gradientColors;
+        final double strokeWidth;
+        final double? endPoint;
+      
+        @override
+        void paint(Canvas canvas, Size size) {
+          final radius = size.height / 2;
+          size = Size.fromRadius(radius);
+          final offset = strokeWidth / 2;
+          final scapToDegree = offset / radius;
+          final startAngle = _degreeToRad(270) + scapToDegree;
+          final sweepAngle = _degreeToRad(endPoint ?? 360) - (2 * scapToDegree);
+          final rect =
+              Rect.fromCircle(center: Offset(radius, radius), radius: radius);
+          final paint = Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeCap = StrokeCap.round
+            ..strokeWidth = strokeWidth;
+          paint.shader = SweepGradient(
+                  colors: gradientColors,
+                  tileMode: TileMode.repeated,
+                  startAngle: _degreeToRad(270),
+                  endAngle: _degreeToRad(270 + 360.0))
+              .createShader(
+                  Rect.fromCircle(center: Offset(radius, radius), radius: 0));
+      
+          canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
+        }
+      
+        double _degreeToRad(double degree) => degree * pi / 180;
+      
+        @override
+        bool shouldRepaint(CustomPainter oldDelegate) {
+          return true;
+        }
+      }      
+      `
+    ),
+    createFile(
+      `toast.dart`,
+      `${blocDirectoryPath}/common/widgets/toast`,
+      `import 'dart:async';
+      import 'package:flutter/material.dart';
+      
+      import '../../../../app.dart';
+      import '../../../generator/colors.gen.dart';
+      import '../../../utils/extensions.dart';
+      import '../../../utils/styles.dart';
+      import '../dialog/loading.dart';
+      
+      class ToastWidget {
+        ToastWidget._();
+        static ToastWidget instance = ToastWidget._();
+        OverlayEntry? _overlay;
+        Timer? lifeTime;
+        void showToast(
+          String message, {
+          Color? messageColor,
+          Color? backgroundColor,
+          int? seconds,
+          String? icon,
+          TextStyle? style,
+          Widget? child,
+          bool hideLoading = false,
+        }) {
+          if (hideLoading) {
+            LoadingDialog.instance.hide();
+          }
+          if (_overlay == null) {
+            startTimer(seconds: seconds);
+            _overlay = OverlayEntry(
+              builder: (context) => GestureDetector(
+                onTap: () {
+                  hideToastV2();
+                },
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: BuildBodyWidget(
+                    message: message,
+                    backgroundColor: backgroundColor,
+                    messageColor: messageColor,
+                    seconds: seconds,
+                    icon: icon,
+                    style: style,
+                    child: child,
+                  ),
+                ),
+              ),
+            );
+            Overlay.of(navigatorKey.currentState!.context).insert(_overlay!);
+          } else {
+            // hideToastV2();
+            // showToastV2(message,
+            //     messageColor: messageColor, backgroundColor: backgroundColor);
+          }
+        }
+      
+        void hideToastV2() {
+          _overlay?.remove();
+          _overlay = null;
+        }
+      
+        void startTimer({int? seconds}) {
+          lifeTime?.cancel();
+          lifeTime = Timer(Duration(seconds: seconds ?? 4), () {
+            hideToastV2();
+          });
+        }
+      }
+      
+      class BuildBodyWidget extends StatefulWidget {
+        const BuildBodyWidget(
+            {super.key,
+            required this.message,
+            this.backgroundColor,
+            this.messageColor,
+            this.child,
+            this.icon,
+            this.style,
+            this.seconds});
+        final Color? messageColor;
+        final Color? backgroundColor;
+        final int? seconds;
+        final String message;
+        final String? icon;
+        final Widget? child;
+        final TextStyle? style;
+        @override
+        State<BuildBodyWidget> createState() => _BuildBodyWidgetState();
+      }
+      
+      class _BuildBodyWidgetState extends State<BuildBodyWidget>
+          with SingleTickerProviderStateMixin {
+        late AnimationController controller;
+        late Animation<Offset> position;
+      
+        @override
+        void initState() {
+          super.initState();
+          controller = AnimationController(
+              vsync: this, duration: const Duration(milliseconds: 1000));
+          position = Tween<Offset>(begin: const Offset(0.0, -1.0), end: Offset.zero)
+              .animate(CurvedAnimation(parent: controller, curve: Curves.easeIn));
+          controller.forward();
+        }
+      
+        @override
+        Widget build(BuildContext context) {
+          return SafeArea(
+            child: SlideTransition(
+              position: position,
+              child: Column(
+                children: [
+                  Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: widget.backgroundColor ?? AppColors.primaryColor,
+                    ),
+                    margin: EdgeInsets.symmetric(horizontal: 10.sf),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 12.sf,
+                      horizontal: 10.sf,
+                    ),
+                    child: Row(
+                      children: [
+                        if (widget.icon != null)
+                          Padding(
+                            padding: EdgeInsets.only(right: 10.sf),
+                            child: const Icon(
+                              Icons.info,
+                              color: Colors.white,
+                            ),
+                          ),
+                        Expanded(
+                          child: Text(
+                            widget.message,
+                            textAlign: widget.icon == null ? TextAlign.center : null,
+                            style: (widget.style ?? AppTextStyle.normal).copyWith(
+                              color: widget.messageColor ?? AppColors.white,
+                              height: 1,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+      }             
+      `
+    ),
+    //#endregion
     //#region language
     createFile(
       `app_vi.arb`,
@@ -115,10 +456,14 @@ async function generateCore(targetDirectory: string) {
       static SharedPreferencesHelper get instance => SharedPreferencesHelper._();
       
       static late SharedPreferences _pref;
+
+      Future<void> init() async {
+        _pref = await SharedPreferences.getInstance();
+      }
       
       static String getApiTokenKey() {
         try {
-          return _pref.setString(AppLocalKey.authKey) ?? '';
+          return _pref.getString(AppLocalKey.authKey) ?? '';
         } catch (e) {
           return '';
         }
@@ -364,12 +709,7 @@ async function generateCore(targetDirectory: string) {
       }
       
       @override
-      Future<void> onError(DioError err, ErrorInterceptorHandler handler) async {
-        //TODO: GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-        // MaterialApp(
-        //             debugShowCheckedModeBanner: false,
-        //             navigatorKey: navigatorKey,
-        // )
+      Future<void> onError(DioException err, ErrorInterceptorHandler handler) async {
         // final context = navigatorKey.currentState!.context;
         if (!await InternetConnectionChecker().hasConnection) {
           super.onError(err, handler);
@@ -473,6 +813,51 @@ async function generateCore(targetDirectory: string) {
       
       $initGetIt(getIt);
     }
+      `
+    ),
+    createFile(
+      `firebase_option.dart`,
+      `${blocDirectoryPath}/services/firebase`,
+      `import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
+      import 'package:flutter/foundation.dart'
+          show defaultTargetPlatform, TargetPlatform;
+      import 'package:flutter_dotenv/flutter_dotenv.dart';
+      
+      class DefaultFirebaseOptions {
+        DefaultFirebaseOptions();
+        static String get name {
+          return dotenv.env['NAME'] ?? '';
+        }
+      
+        static FirebaseOptions get currentPlatform {
+          switch (defaultTargetPlatform) {
+            case TargetPlatform.android:
+              return android;
+            case TargetPlatform.iOS:
+              return ios;
+      
+            // ignore: no_default_cases
+            default:
+              throw UnsupportedError(
+                'DefaultFirebaseOptions are not supported for this platform.',
+              );
+          }
+        }
+      
+        static FirebaseOptions android = FirebaseOptions(
+          apiKey: dotenv.env['ANDROID_API_KEY'] ?? '',
+          appId: dotenv.env['ANDROID_APP_ID'] ?? '',
+          messagingSenderId: dotenv.env['ANDROID_MESSAGING_SENDER_ID'] ?? '',
+          projectId: dotenv.env['ANDROID_PROJECT_ID'] ?? '',
+        );
+      
+        static FirebaseOptions ios = FirebaseOptions(
+          apiKey: dotenv.env['IOS_API_KEY'] ?? '',
+          appId: dotenv.env['IOS_APP_ID'] ?? '',
+          messagingSenderId: dotenv.env['IOS_MESSAGING_SENDER_ID'] ?? '',
+          projectId: dotenv.env['IOS_PROJECT_ID'] ?? '',
+        );
+      }          
       `
     ),
     createFile(
@@ -711,6 +1096,56 @@ async function generateCore(targetDirectory: string) {
       `import 'package:flutter/material.dart';
     import 'package:dio/dio.dart';
 
+    class SizeUntil {
+      SizeUntil._();
+      static SizeUntil instance = SizeUntil._();
+      static final view = WidgetsBinding.instance.platformDispatcher.implicitView;
+      static final Size pS = view?.physicalSize ?? sizeDefault;
+      static final dR = view?.devicePixelRatio ?? 1;
+      static final Size _size = pS / dR;
+      static Size get size => _size;
+    }
+    
+    Size sizeDefault = const Size(375, 812);
+    
+    final double heightFlex = sizeDefault.height.sf;
+    final double widthFlex = sizeDefault.width.sf;
+    
+    extension NumEx on num {
+      double get hf => SizeUntil.size.h(sizeDefault) * this;
+    
+      double get wf => SizeUntil.size.w(sizeDefault) * this;
+    
+      double get sf => SizeUntil.size.f(sizeDefault) * this;
+    
+      double get rf => SizeUntil.size.f(sizeDefault) * this;
+    
+      double height(num size) => sf / size.sf;
+    }
+    
+    /// without size default [sizeDefault]
+    extension NumSize on Size {
+      double h(Size size) => height / size.height;
+    
+      double w(Size size) => width / size.width;
+    
+      double f(Size size) =>
+          width < height ? width / size.width : height / size.height;
+    }
+    
+    class NumContext {
+      NumContext(this.numBer, this.numHeight, this.context);
+      final double numBer;
+      final double numHeight;
+      final BuildContext context;
+    }
+    
+    extension SizeLayoutContext on BuildContext {
+      Size get appSize => MediaQuery.of(this).size;
+    
+      EdgeInsets get padding => MediaQuery.of(this).padding;
+    }
+
       enum Status {
       initial,
       loading,
@@ -741,8 +1176,8 @@ async function generateCore(targetDirectory: string) {
       extension ExceptionCustomization on Exception {
       String decodeErrorResponse() {
         String message = '';
-        if (runtimeType == DioError) {
-          final dioException = this as DioError;
+        if (runtimeType == DioException) {
+          final dioException = this as DioException;
           if (dioException.response?.data != null) {
             message = dioException.response?.statusCode == 401
                 ? ''
@@ -769,6 +1204,95 @@ async function generateCore(targetDirectory: string) {
           );
       double textHeight(num size) => this / size;
     }
+      `
+    ),
+    createFile(
+      `styles.dart`,
+      `${blocDirectoryPath}/utils`,
+      `import 'package:flutter/material.dart';
+
+      import '../generator/colors.gen.dart';
+      import 'extensions.dart';
+      class AppTextStyle {
+        AppTextStyle._internal();
+        static TextStyle get _baseTextStyle => TextStyle(
+              // fontFamily: FontFamily.beVietNamPro,
+              color: AppColors.primaryColor,
+              fontStyle: FontStyle.normal,
+              fontSize: 16.sf,
+              fontWeight: FontWeight.w400,
+              height: 28.sf.textHeight(16.sf),
+            );
+      
+        static TextStyle get normal => _baseTextStyle.copyWith(
+              color: AppColors.neutralGreenColor,
+              fontSize: 14.sf,
+              height: 24.sf.textHeight(14.sf),
+            );
+      }
+      
+      extension VTextStyle on TextStyle {
+        TextStyle cp({
+          bool? inherit,
+          Color? color,
+          Color? backgroundColor,
+          double? fontSize,
+          FontWeight? fontWeight,
+          FontStyle? fontStyle,
+          double? letterSpacing,
+          double? wordSpacing,
+          TextBaseline? textBaseline,
+          double? height,
+          // ui.TextLeadingDistribution? leadingDistribution,
+          Locale? locale,
+          Paint? foreground,
+          Paint? background,
+          // List<ui.Shadow>? shadows,
+          // List<ui.FontFeature>? fontFeatures,
+          // List<ui.FontVariation>? fontVariations,
+          TextDecoration? decoration,
+          Color? decorationColor,
+          TextDecorationStyle? decorationStyle,
+          double? decorationThickness,
+          String? debugLabel,
+          String? fontFamily,
+          List<String>? fontFamilyFallback,
+          String? package,
+          TextOverflow? overflow,
+        }) =>
+            copyWith(
+              inherit: inherit,
+              color: color,
+              backgroundColor: backgroundColor,
+              fontSize: fontSize,
+              fontWeight: fontWeight,
+              fontStyle: fontStyle,
+              letterSpacing: letterSpacing,
+              wordSpacing: wordSpacing,
+              textBaseline: textBaseline,
+              height:
+                  height != null ? height.sf.textHeight(fontSize ?? 14.sf) : height,
+              leadingDistribution: leadingDistribution,
+              locale: locale,
+              foreground: foreground,
+              background: background,
+              shadows: shadows,
+              fontFeatures: fontFeatures,
+              fontVariations: fontVariations,
+              decoration: decoration,
+              decorationColor: decorationColor,
+              decorationStyle: decorationStyle,
+              decorationThickness: decorationThickness,
+              debugLabel: debugLabel,
+              // fontFamily: fontFamily ??
+              //     (fontWeight == FontWeight.w700
+              //         ? FontFamily.beVietNamProBold
+              //         : FontFamily.beVietNamPro),
+              fontFamilyFallback: fontFamilyFallback,
+              package: package,
+              overflow: overflow,
+            );
+      }
       `
     ),
     createFile(
@@ -845,6 +1369,34 @@ async function generateCore(targetDirectory: string) {
           log(e.toString())
         }
       }
+      //Material app
+      GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+      navigatorKey: navigatorKey,
+      debugShowCheckedModeBanner: false,
+      color: Colors.white,
+      supportedLocales: S.supportedLocales,
+      localizationsDelegates: const [
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      builder: EasyLoading.init(builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          child: child!,
+        );
+      }),
+      home: const Container(),
+      onGenerateRoute: Routes.router.generator,
+      theme: ThemeData(
+        primarySwatch: Colors.red,
+        appBarTheme: const AppBarTheme(
+          systemOverlayStyle: SystemUiOverlayStyle.dark,
+        ),
+        // fontFamily: FontFamily.beVietNamPro,
+      ),
       `
     ),
     createFile(
@@ -892,6 +1444,12 @@ flutter pub run build_runner build --delete-conflicting-outputs`
 #   line_length: 80
 #   integrations:
 #     flutter_svg: true
+#   colors:
+#     enabled: true
+#     outputs:
+#       class_name: AppColors
+#     inputs:
+#       - assets/color/colors.xml
 # flutter:
 #   generate: true
 #   uses-material-design: true
@@ -905,6 +1463,28 @@ flutter pub add json_serializable --dev
 flutter pub add copy_with_extension_gen --dev
 flutter pub add flutter_gen_runner --dev
 flutter pub add retrofit_generator --dev
+
+flutter pub add flutter_secure_storage
+flutter pub add shared_preferences
+flutter pub add retrofit
+flutter pub add dio
+flutter pub add internet_connection_checker
+flutter pub add pretty_dio_logger
+flutter pub add fluro
+flutter pub add injectable
+flutter pub add get_it
+flutter pub add copy_with_extension
+flutter pub add meta
+flutter pub add dartz
+flutter pub add firebase_analytics
+flutter pub add firebase_crashlytics
+flutter pub add firebase_core
+flutter pub add firebase_remote_config
+flutter pub add launch_review
+flutter pub add flutter_easyloading
+flutter pub add package_info_plus
+flutter pub add version
+flutter pub add flutter_dotenv
       `
     ),
     //#endregion
