@@ -63,7 +63,7 @@ export const presentationStr = (
   import 'bloc/${fileName}_bloc.dart';
 
 //TODO: router
-// setRouter(
+// _setRouter(
 //   RoutePath.${handleName},
 //   handler: ${handleName}Handler,
 // );
@@ -84,11 +84,11 @@ Handler ${handleName}Handler = Handler(
 class ${className}Page extends StatefulWidget {
   const ${className}Page({super.key});
 
-  /// {@template ${templateStr}
+  /// {@template ${templateStr}}
   /// \`\`\`dart
   /// Routes.router.navigateTo(
   ///   context,
-  ///   RoutePath.${className},
+  ///   RoutePath.${handleName},
   /// )
   /// \`\`\`
   /// {@endtemplate}
