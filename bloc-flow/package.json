@@ -86,6 +86,10 @@
         "title": "New Model"
       },
       {
+        "command": "bloc-flow.wrap-function",
+        "title": "Wrap Function"
+      },
+      {
         "command": "bloc-flow.addColor",
         "category": "Calico Colors",
         "title": "Add Color"
@@ -135,6 +139,12 @@
           "command": "bloc-flow.clearColors",
           "group": "navigation",
           "when": "view == bloc-flow.colorsView"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "bloc-flow.wrap-function",
+          "when": "editorLangId == dart"
         }
       ]
     }
