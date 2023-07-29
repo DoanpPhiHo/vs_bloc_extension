@@ -89,11 +89,11 @@ async function generateFeature(
       }`
     ),
     createFile(
-      `${fileName}_request.g.dart`,
+      `${fileName}_request.dart`,
       `${blocDirectoryPath}/data/models`,
       `import 'package:json_annotation/json_annotation.dart';
       
-      part '${fileName}_request.dart';
+      part '${fileName}_request.g.dart';
       
       @JsonSerializable(explicitToJson: true)
       class ${className}Request {
@@ -110,9 +110,9 @@ async function generateFeature(
     createFile(
       `${fileName}_local_data_source.dart`,
       `${blocDirectoryPath}/data/local_data_sources`,
-      `import 'package:injectable/injectable.dart';
+      `import '../models/change_code_model.dart';
       abstract class ${className}LocalDataSource {
-        Future<${className}Model?> get(String token);
+        Future<${className}Model?> get();
       }
       class ${className}LocalDataSourceImplement implements ${className}LocalDataSource {
         ${className}LocalDataSourceImplement(
@@ -122,7 +122,7 @@ async function generateFeature(
         //final XYZ xyz;
 
         @override
-        Future<${className}Model?> get(){
+        Future<${className}Model?> get() async {
           // return xyz.xyz(abc);
           return null;
         }   
@@ -132,7 +132,9 @@ async function generateFeature(
     createFile(
       `${fileName}_remote_data_source.dart`,
       `${blocDirectoryPath}/data/remote_data_sources`,
-      `abstract class ${className}RemoteDataSource {
+      `import 'package:injectable/injectable.dart';
+      import '../models/${fileName}_request.dart';
+      abstract class ${className}RemoteDataSource {
         Future<dynamic> get({required ${className}Request param});
       }
       
@@ -162,8 +164,8 @@ async function generateFeature(
       import 'package:injectable/injectable.dart';
   import '../../data/local_data_sources/${fileName}_local_data_source.dart';
   import '../../data/remote_data_sources/${fileName}_remote_data_source.dart';
-  import '../../data/models/models.dart';
-  
+  import '../../data/models/${className}_model.dart';
+import '../../data/models/${className}_request.dart';
   @injectable
   abstract class ${className}Repository {
     @factoryMethod
@@ -173,7 +175,7 @@ async function generateFeature(
     ) =>
         ${className}RepositoryImlp(remoteDataSource, localDataSource);
   
-        Future<Either<String, ${className}Model>> get(String id);
+        Future<Either<String, ${className}Model>> get({required ${className}Request param});
   }
   
   class ${className}RepositoryImlp extends ${className}Repository {
@@ -188,12 +190,12 @@ async function generateFeature(
     final ${className}RemoteDataSource _remoteDataSource;
     @override
     Future<Either<String, ${className}Model>>
-        get(String id) async {
+        get({required ${className}Request param}) async {
       try {
         // final resultRemote = await _remoteDataSource.get(id);
         // final resultLocal = await _localDataSource.get(id);
         // final data = resultRemote.data;
-        return Right(${className}Model());
+        return Right(${className}Model(id: ''));
       } catch (e) {
         return Left(e.toString());
       }
@@ -205,12 +207,14 @@ async function generateFeature(
       `${fileName}_use_case.dart`,
       `${blocDirectoryPath}/domain/use_case`,
       `import 'package:dartz/dartz.dart';
+      import '../repositories/${className}_repository.dart';
+      import '../../data/models/${className}_request.dart';
       import 'package:injectable/injectable.dart';
       //TODO: import method BaseException handle${className}Message(any); file exception.dart
       @injectable
       class ${className}UseCase extends UseCase<dynamic, ${className}UseCaseParam> {
         ${className}UseCase(this._repository);
-        final AuthRepository _repository;
+        final ${className}Repository _repository;
         @override
         Future<Either<BaseException, dynamic>> call(${className}UseCaseParam param) async {
           try {
@@ -239,7 +243,7 @@ async function generateFeature(
   createDirectory(`${blocDirectoryPath}/presentation`);
   var dir = `${blocDirectoryPath}/presentation/bloc`;
   createDirectory(dir);
-  createFile(`${fileName}_bloc.dart`, dir, blocStr(fileName));
+  createFile(`${fileName}_cubit.dart`, dir, blocStr(fileName));
   createFile(`${fileName}_state.dart`, dir, stateStr(fileName));
 
   let _fullPath = `${uri.path}/${fileName}`.split("/");
@@ -258,7 +262,7 @@ export const blocStr = (name: string) => {
 
   return `import 'package:flutter_bloc/flutter_bloc.dart';
   import 'package:meta/meta.dart';
-  import '../../../domain/use_case/${fileName}_use_case.dart';
+  import '../../domain/use_case/${className}_use_case.dart';
   
   part '${fileName}_state.dart';
   
@@ -333,13 +337,13 @@ export const presentationStr = (
 
   return `import 'package:flutter/material.dart';
   import 'package:flutter_bloc/flutter_bloc.dart';
-  import '../../domain/use_case/${fileName}_use_case.dart';
   import 'bloc/${fileName}_cubit.dart';
+  import '../../../util/extensions.dart';
 
-//TODO: generateRoute
+//TODO: generateRoute file route.dart
 // case ScreenName.${handleName}:
 //         return _materialPage(const ${className}Page(), settings);
-//TODO: router path
+//TODO: router path file strings.dart
 // /// {@macro ${templateStr}}
 // static const String ${handleName} = ${className}Page.name;
 
@@ -367,35 +371,35 @@ class _${className}PageState extends BaseState<${className}Page> {
     return BlocConsumer<${className}Cubit, ${className}State>(
       bloc: _cubit,
       listener: (context, state) {
-        switch (state) {
-          case ${className}Loading():
-            LoadingDialog.instance.show();
+        switch (state.runtimeType) {
+          case ${className}Loading:
+            widgetUtil.showGlobalLoadingOverlay();
             break;
-          case ${className}Failure():
-            LoadingDialog.instance.hide();
-            ToastWidget.instance.showToast(
-              state.error,
-              backgroundColor: AppColors.red,
-              messageColor: AppColors.white,
-            );
+          case ${className}Failure:
+            state as ${className}Failure;
+            widgetUtil.dismissGlobalLoadingOverlay();
+            //TODO: handle error
+            log(state.error);
             break;
-          case ${className}Success():
-            LoadingDialog.instance.hide();
+          case ${className}Success:
+            widgetUtil.dismissGlobalLoadingOverlay();
             break;
         }
       },
       builder: (context, state) {
-          switch (state) {
-            case ${className}Initial():
+          switch (state.runtimeType) {
+            case ${className}Initial:
               return Container();
-            case ${className}Failure():
+            case ${className}Failure:
+              state as ${className}Failure;
               return Center(
                 child: Text(
                   state.error,
-                  style: DSTheme.of(context).style.tsInterT14M.copyWith(color: AppColors.red),
+                  style: DSTheme.of(context).style.tsInterT14M.copyWith(color: Colors.red),
                 ),
               );
-            case ${className}Success():
+            case ${className}Success:
+              state as ${className}Success;
                 return Scaffold(
                     appBar: AppBar(
                       leading: Center(
@@ -407,7 +411,7 @@ class _${className}PageState extends BaseState<${className}Page> {
                           ),
                         ),
                       ),
-                      backgroundColor: AppColors.white,
+                      backgroundColor: Colors.white,
                       centerTitle: true,
                       title: Text(
                         '${className}'.hardcode,
@@ -421,7 +425,7 @@ class _${className}PageState extends BaseState<${className}Page> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      shadowColor: AppColors.black.withOpacity(.2),
+                      shadowColor: Colors.black.withOpacity(.2),
                     ),
                     backgroundColor: Colors.white,
                     body: Padding(
@@ -431,7 +435,7 @@ class _${className}PageState extends BaseState<${className}Page> {
                             Text(
                                 '${templateStr}'.hardcode,
                                 style: DSTheme.of(context).style.tsInterT14M.copyWith(
-                                    color: AppColors.primary300,
+                                    color: Colors.red[100],
                                     fontWeight: FontWeight.w700,
                                     fontSize: 14,
                                 ),
