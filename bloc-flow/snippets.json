@@ -168,5 +168,86 @@
             "@Query('${1:name}') int ${1:name}"
         ],
         "description": "a query template retrofit"
+    },
+    "hardcode": {
+        "prefix": "hard",
+        "body": [
+            "'$1'.hardcode"
+        ]
+    },
+    "SizeBox vertical": {
+        "prefix": "ver",
+        "body": [
+            "$1.sf.vertical,"
+        ]
+    },
+    "SizeBox horizontal": {
+        "prefix": "hor",
+        "body": [
+            "$1.sf.horizontal,"
+        ]
+    },
+    "infinity": {
+        "prefix": "inf",
+        "body": [
+            "double.infinity"
+        ]
+    },
+    "sf": {
+        "prefix": "sf",
+        "body": [
+            "$1.sf"
+        ]
+    },
+    "style": {
+        "prefix": "style",
+        "body": [
+            "AppTextStyle.normalStyle.cp(",
+            "height: 0,",
+            "),"
+        ]
+    },
+    "radius": {
+        "prefix": "radius",
+        "body": [
+            "BorderRadius.circular($1.sf)"
+        ]
+    },
+    "text widget": {
+        "prefix": "text",
+        "body": [
+            "Text(",
+            "  '$1'.hardcode,",
+            "  style: AppTextStyle.normalStyle.cp(",
+            "    height: ${3:height},",
+            "    fontSize: $2.sf,",
+            "  ),",
+            "),"
+        ]
+    },
+    "text rich widget": {
+        "prefix": "rich",
+        "body": [
+            "Text.rich(",
+            " TextSpan(",
+            "  children: [",
+            "   TextSpan(",
+            "    text: $1,",
+            "    style: AppTextStyle.normalStyle.cp(",
+            "     height: 0,",
+            "    ),",
+            "   ),",
+            "   TextSpan(",
+            "    text: $2,",
+            "    style: AppTextStyle.normalStyle.cp(",
+            "     height: 0,",
+            "     color: AppColors.primary900,",
+            "     fontWeight: FontWeight.w700,",
+            "    ),",
+            "   ),",
+            "  ],",
+            " ),",
+            "),"
+        ]
     }
 }
