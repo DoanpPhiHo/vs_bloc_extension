@@ -2,7 +2,7 @@
   "name": "bloc-flow",
   "displayName": "bloc_flow",
   "description": "bloc flow",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "publisher": "HoDoan",
   "engines": {
     "vscode": "^1.76.0"
@@ -66,6 +66,10 @@
         "title": "New Feature"
       },
       {
+        "command": "bloc-flow.new_feature_bloc_mvc",
+        "title": "New Feature Bloc MVC"
+      },
+      {
         "command": "bloc-flow.new_presentation",
         "title": "New Presentation"
       },
@@ -101,6 +105,11 @@
       "explorer/context": [
         {
           "command": "bloc-flow.new_feature",
+          "group": "blocFlow@1",
+          "when": "explorerResourceIsFolder"
+        },
+        {
+          "command": "bloc-flow.new_feature_bloc_mvc",
           "group": "blocFlow@1",
           "when": "explorerResourceIsFolder"
         },
