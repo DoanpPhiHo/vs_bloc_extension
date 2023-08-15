@@ -20,7 +20,11 @@
     "Snippets",
     "Programming Languages"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:json",
+    "onLanguage:yaml",
+    "workspaceContains:**/.flow"
+  ],
   "icon": "assets/logo.png",
   "main": "./out/extension.js",
   "contributes": {

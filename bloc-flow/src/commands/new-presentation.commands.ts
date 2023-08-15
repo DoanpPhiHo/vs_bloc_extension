@@ -104,11 +104,12 @@ class _${className}PageState extends State<${className}Page> {
   Widget build(BuildContext context) {
     return BlocListener<${className}Bloc, ${className}State>(
       listener: (context, state) {
-        switch (state) {
+        switch (state) {//.runtimeType
           case ${className}Loading():
             LoadingDialog.instance.show();
             break;
           case ${className}Failure():
+            // state as ${className}Failure;
             LoadingDialog.instance.hide();
             ToastWidget.instance.showToast(
               state.error,
@@ -123,15 +124,16 @@ class _${className}PageState extends State<${className}Page> {
       },
       child: BlocBuilder<${className}Bloc, ${className}State>(
         builder: (context, state) {
-          switch (state) {
-            case ${className}Initial():
-              return Container();
+          switch (state) {//.runtimeType
+            // state as ${className}Failure;
             case ${className}Failure():
-              return Center(
-                child: Text(
-                  state.error,
-                  style: AppTextStyle.normal.cp(color: AppColors.red),
-                ),
+              return Scaffold(
+                body:Center(
+                  child: Text(
+                    state.error,
+                    style: AppTextStyle.normal.cp(color: AppColors.red),
+                  ),
+                )
               );
             case ${className}Success():
                 return Scaffold(
@@ -179,7 +181,7 @@ class _${className}PageState extends State<${className}Page> {
                     ),
                   );
           }
-          return Container();
+          return const Scaffold();
         },
       ),
     );
