@@ -7,12 +7,14 @@ import { newCore } from "./commands/new-core.commands";
 import { newColor } from "./commands/new-color.commands";
 import { wrapFunction } from "./commands/wrap-function.commands";
 import * as fs from "fs";
+import { newPageMVC } from "./commands/new-page-mvc.commands";
 const DART_MODE = { language: "dart", scheme: "file" };
 export function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "bloc-flow" is now active!');
 
   context.subscriptions.push(
     vscode.commands.registerCommand("bloc-flow.new_feature", newPage),
+    vscode.commands.registerCommand("bloc-flow.new_feature_bloc_mvc", newPageMVC),
     vscode.commands.registerCommand(
       "bloc-flow.new_presentation",
       newPresentation
@@ -43,8 +45,6 @@ export function activate(context: vscode.ExtensionContext) {
         let lstClass = defineListClass(fileCurrentJson, "Home");
         for (let index = 0; index < lstClass.length; index++) {
           const element = lstClass[index];
-          console.log("forrrrr => ", element.name);
-
           let str = createClass(element.value, element.name);
           if (str !== undefined) {
             classP.push(str);
