@@ -20,7 +20,11 @@
     "Snippets",
     "Programming Languages"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:json",
+    "onLanguage:yaml",
+    "workspaceContains:**/.flow"
+  ],
   "icon": "assets/logo.png",
   "main": "./out/extension.js",
   "contributes": {
@@ -90,6 +94,10 @@
         "title": "New Model"
       },
       {
+        "command": "bloc-flow.wrap-function",
+        "title": "Wrap Function"
+      },
+      {
         "command": "bloc-flow.addColor",
         "category": "Calico Colors",
         "title": "Add Color"
@@ -144,6 +152,12 @@
           "command": "bloc-flow.clearColors",
           "group": "navigation",
           "when": "view == bloc-flow.colorsView"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "bloc-flow.wrap-function",
+          "when": "editorLangId == dart"
         }
       ]
     }

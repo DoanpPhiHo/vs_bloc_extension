@@ -1,8 +1,15 @@
 {
-    "Bloc": {
+    "Lang Code": {
         "prefix": "ss",
         "body": [
             "S.of(context)!."
+        ]
+    },
+    "lang gen": {
+        "prefix": "lang",
+        "body": [
+            "//TODO: hardcode \"$1\":\"$2\"",
+            "S.of(context)!.$1"
         ]
     },
     "Future code US": {
