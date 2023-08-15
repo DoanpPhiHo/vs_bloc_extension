@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
       new BlocFlowProvider()
     )
   );
-///TODO: hodoan extras function
+  ///TODO: hodoan extras function
   vscode.workspace.onDidSaveTextDocument((e) => {
     let workspaceCurrent = e.fileName.split("/.flow")[0];
     let flowPath = `${workspaceCurrent}/.flow/flow.json`;
@@ -63,6 +63,9 @@ export function activate(context: vscode.ExtensionContext) {
   
               ${classP.join("\n\n")}
           `
+          );
+          vscode.window.activeTerminal?.sendText(
+            `dart format ${workspaceCurrent}/${modelPath}/home_model.dart`
           );
         } catch (error) {
           console.log(error);
