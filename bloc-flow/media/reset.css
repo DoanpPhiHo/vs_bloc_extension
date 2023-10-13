@@ -1,6 +1,11 @@
 html {
 	box-sizing: border-box;
 	font-size: 13px;
+	height: 100%;
+}
+
+body{
+	height: 100%;
 }
 
 *,
@@ -22,10 +27,4 @@ ul {
 	margin: 0;
 	padding: 0;
 	font-weight: normal;
-}
-
-img {
-	max-width: 100%;
-	width: 100%;
-	height: auto;
 }
