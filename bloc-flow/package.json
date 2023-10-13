@@ -2,7 +2,7 @@
   "name": "bloc-flow",
   "displayName": "bloc_flow",
   "description": "bloc flow",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "HoDoan",
   "engines": {
     "vscode": "^1.76.0"
