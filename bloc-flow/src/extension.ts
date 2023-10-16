@@ -107,7 +107,7 @@ class ColorsViewProvider implements vscode.WebviewViewProvider {
 					and only allow scripts that have a specific nonce.
 					(See the 'webview-sample' extension sample for img-src content security policy examples)
 				-->
-				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; frame-src https://ho-doan.github.io?frame=true; script-src 'nonce-${nonce}';">
+				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; frame-src https://ho-doan.github.io/?frame=true; script-src 'nonce-${nonce}';">
 
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -118,7 +118,7 @@ class ColorsViewProvider implements vscode.WebviewViewProvider {
 				<title>Cat Colors</title>
 			</head>
 			<body>
-        		<iframe id="ho_doan" frameborder="0" sandbox="allow-scripts allow-same-origin" scrolling="yes" flex-grow=1 width="100%" height="100%" src="https://ho-doan.github.io?frame=true"></iframe>
+        		<iframe id="ho_doan" frameborder="0" sandbox="allow-scripts allow-same-origin" scrolling="yes" flex-grow=1 width="100%" height="100%" src="https://ho-doan.github.io/?frame=true"></iframe>
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;
